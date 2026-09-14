@@ -1,21 +1,25 @@
+========================
 🔍 API ANALYZER - Анализатор API-вызовов на веб-сайтах
 ========================
 
 📝 ОПИСАНИЕ
 ========================
 
-Программа для автоматического анализа веб-сайтов на наличие JavaScript-кода, 
+Программа для автоматического анализа веб-сайтов на наличие JavaScript-кода,
 использующего функции доступа к:
 
-- 🎥 Камере
-- 🎙️ Микрофону
 - 📍 Геопозиции
+- 📷 Камере
+- 🎙️ Микрофону
+- 🖥️ Экрану
+- 📹 Видео
 - 🔔 Уведомлениям
 - 📋 Буферу обмена
-- 🔋 Датчикам (батарея, вибрация, ориентация)
+- 💳 Платежам
+- 🔋 Датчикам
 - 🎤 Голосовому распознаванию
 
-Инструмент загружает сайт через Selenium, анализирует JavaScript-код и 
+Инструмент загружает сайт через Selenium, анализирует JavaScript-код и
 классифицирует найденные API-вызовы по вероятности их реального использования.
 
 
@@ -24,7 +28,7 @@
 
 1. Клонирование репозитория
 
-   git clone https://github.com/ваш_username/api-analyzer.git
+   git clone https://github.com/keronis7/api-analyzer.git
    cd api-analyzer
 
 2. Установка зависимостей
@@ -43,7 +47,7 @@
 📊 ПРИМЕР ВЫВОДА
 ========================
 
-
+========================
 🔍 API ANALYZER
 ========================
 
@@ -59,20 +63,32 @@
 🔍 Проверка предупреждений...
 ⏳ Ожидание скриптов...
 
-
+========================
 📊 ИТОГИ
 ========================
 🌐 https://yandex.ru/maps/
 📜 Скриптов: 21
-🔍 API: Notification, navigator.getBattery, webkitSpeechRecognition, SpeechRecognition
+🔍 API: Notification, navigator.getBattery, webkitSpeechRecognition, SpeechRecognition, PaymentRequest
 
-💾 Отчет сохранен: reports/report_yandex.ru_maps__20260904_173026.json
-📊 Всего совпадений: 64
-   🔴 High: 27
-   🟡 Medium: 11
-   🟢 Low: 26
+💾 Отчет сохранен: reports/yandex.ru_maps__20260914_120000/report.json
+📊 Всего совпадений: 66
+   🔴 High: 29
+   🟡 Medium: 12
+   🟢 Low: 25
 
 ✅ Готово!
+
+
+📁 СТРУКТУРА ОТЧЕТА
+========================
+
+reports/
+└── yandex.ru_maps__20260914_120000/
+    ├── report.json              # Результаты анализа
+    └── scripts/                 # Сохраненные скрипты
+        ├── script_0001.js
+        ├── script_0002.js
+        └── ...
 
 
 📋 ФОРМАТ ОТЧЕТА (JSON)
@@ -80,8 +96,8 @@
 
 {
   "url": "https://yandex.ru/maps/",
-  "timestamp": "2026-09-04 17:30:26",
-  "analysis_duration": 62.22,
+  "timestamp": "2026-09-14 12:00:00",
+  "analysis_duration": 92.44,
   "scripts_stats": {
     "inline": 11,
     "external": 10,
@@ -91,29 +107,36 @@
     "Notification",
     "navigator.getBattery",
     "webkitSpeechRecognition",
-    "SpeechRecognition"
+    "SpeechRecognition",
+    "PaymentRequest"
   ],
   "interactions": [
-    "Поиск",
-    "Микрофон",
-    "Меню",
-    "Геолокация",
-    "Прокрутка",
-    "Карта"
+    "Search Input",
+    "Screen Share",
+    "Menu",
+    "Geolocation",
+    "Sensors",
+    "Scroll",
+    "Map/Video Click"
+  ],
+  "saved_scripts": [
+    "script_0001.js",
+    "script_0002.js"
   ],
   "summary": {
-    "total_calls": 64,
-    "high_confidence": 27,
-    "medium_confidence": 11,
-    "low_confidence": 26
+    "total_calls": 66,
+    "high_confidence": 29,
+    "medium_confidence": 12,
+    "low_confidence": 25
   },
   "calls_by_confidence": {
     "high": {
-      "count": 27,
+      "count": 29,
       "summary": {
-        "📍 Геопозиция": 15,
-        "📷 Камера/Микрофон": 7,
-        "📋 Буфер обмена": 3,
+        "📍 Геопозиция": 16,
+        "📹 Видео": 5,
+        "📋 Буфер обмена": 4,
+        "📷 Камера": 2,
         "🔔 Уведомления": 1,
         "🔋 Датчики": 1
       },
@@ -121,20 +144,22 @@
         {
           "category": "📍 Геопозиция",
           "matched": "geolocation",
-          "type": "inline",
-          "script_index": 3,
-          "context": "navigator.geolocation.getCurrentPosition(function(position) { console.log(position.coords) });",
-          "src": null
+          "type": "external",
+          "script_index": 4,
+          "confidence": "high",
+          "context": "...userLocation:e.geolocation,formType:e.form.formType...",
+          "script_file": "script_0008.js",
+          "src": "https://maps.yastatic.net/s3/front-maps-static/..."
         }
       ]
     },
     "medium": {
-      "count": 11,
+      "count": 12,
       "summary": {},
       "calls": []
     },
     "low": {
-      "count": 26,
+      "count": 25,
       "summary": {},
       "calls": []
     }
@@ -147,14 +172,18 @@
 
 Категории API:
 
-| Категория        | Эмодзи | Примеры                                    |
-|------------------|--------|--------------------------------------------|
-| Геопозиция       | 📍     | geolocation, position, coords, latitude    |
-| Камера/Микрофон  | 📷     | getUserMedia, mediaDevices, camera         |
-| Уведомления      | 🔔     | Notification, requestPermission            |
-| Буфер обмена     | 📋     | clipboard, writeText, readText             |
-| Датчики          | 🔋     | getBattery, vibrate, DeviceOrientation     |
-| Голос            | 🎤     | SpeechRecognition, webkitSpeechRecognition |
+| Категория        | Эмодзи | Примеры                                            |
+|------------------|--------|----------------------------------------------------|
+| Геопозиция       | 📍     | geolocation, position, coords, latitude, longitude |
+| Камера           | 📷     | getUserMedia, mediaDevices, camera                 |
+| Микрофон         | 🎙️     | microphone, audio, audioinput                      |
+| Экран            | 🖥️     | getDisplayMedia, screenCapture, desktopCapture     |
+| Видео            | 📹     | video, player, playback                            |
+| Уведомления      | 🔔     | Notification, pushManager, showNotification        |
+| Буфер обмена     | 📋     | clipboard, writeText, readText, clipboardData      |
+| Платежи          | 💳     | PaymentRequest, ApplePaySession, canMakePayment    |
+| Датчики          | 🔋     | getBattery, vibrate, DeviceOrientation             |
+| Голос            | 🎤     | SpeechRecognition, webkitSpeechRecognition         |
 
 Оценка вероятности:
 
@@ -172,7 +201,10 @@
 - Headless режим — браузер работает в фоновом режиме, пользователь не видит процесс
 - Автоматическое управление драйвером — webdriver-manager сам загружает подходящую версию ChromeDriver
 - Очистка процессов — после завершения работы все процессы Chrome автоматически закрываются
-- Детальный анализ контекста — для каждого найденного паттерна анализируется контекст для определения вероятности
+- Детальный анализ контекста — для каждого найденного паттерна анализируется контекст
+- Активация API через взаимодействие — нажатие кнопок Screen Share, Microphone, Camera, Notifications
+- Имитация датчиков — генерация событий DeviceOrientation, DeviceMotion, Battery, Vibration
+- Сохранение скриптов — все скрипты с API-вызовами сохраняются в папку scripts/
 
 
 📁 СТРУКТУРА ПРОЕКТА
@@ -184,16 +216,22 @@ api-analyzer/
 ├── README.md                # Документация
 ├── .gitignore               # Игнорируемые файлы
 ├── LICENSE                  # Лицензия MIT
-└── setup.py                 # Для установки через pip
+├── setup.py                 # Для установки через pip
+└── reports/                 # Папка с отчетами
+    └── {сайт}_{дата}_{время}/
+        ├── report.json      # Результаты анализа
+        └── scripts/         # Сохраненные скрипты
 
 
 📈 РЕЗУЛЬТАТЫ ТЕСТИРОВАНИЯ
 ========================
 
-| Сайт              | Скриптов | High | Medium | Low | Всего |
-|-------------------|----------|------|--------|-----|-------|
-| yandex.ru/maps    | 21       | 27   | 11     | 26  | 64    |
-| zoom.us           | 33       | 12   | 13     | 19  | 44    |
+| Сайт                    | Скриптов | High | Medium | Low | Всего |
+|-------------------------|----------|------|--------|-----|-------|
+| yandex.ru/maps          | 21       | 29   | 12     | 25  | 66    |
+| zoom.us                 | 33       | 12   | 13     | 19  | 44    |
+| applepaydemo.apple.com  | 19       | 24   | 16     | 72  | 112   |
+| timbrica.com            | 80       | 54   | 41     | 81  | 176   |
 
 
 📚 ИСПОЛЬЗУЕМЫЕ ТЕХНОЛОГИИ
@@ -229,6 +267,6 @@ MIT License — см. файл LICENSE
 
 
 ⭐ ПОДДЕРЖКА
-================================================================================
+========================
 
 Если проект полезен - поставьте звезду ⭐ на GitHub!
